@@ -13,13 +13,9 @@ class PostFactory extends Factory
      */
     public function definition()
     {
-        $isPrivate = $this->faker->boolean();
         return [
-            'isPrivate' => $isPrivate,
             'title' => $this->faker->sentences($nb = 1, $asText = true),
-            'message' => $this->faker->paragraph(),
-            'sender' => $this->faker->numberBetween(1,10),
-            'receiver' => $isPrivate ? $this->faker->numberBetween(1,10) : null,
+            'message' => $this->faker->paragraph()
         ];
     }
 }

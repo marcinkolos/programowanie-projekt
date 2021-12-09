@@ -18,10 +18,10 @@ class CreatePostsTable extends Migration
             $table->boolean('isPrivate');
             $table->string('title');
             $table->text('message');
-            $table->unsignedBigInteger('senderId');
-            $table->foreign('senderId')->references('id')->on('users');
-            $table->unsignedBigInteger('receiverId');
-            $table->foreign('receiverId')->references('id')->on('users')->nullable();
+            $table->unsignedBigInteger('sender');
+            $table->foreign('sender')->references('id')->on('users');
+            $table->unsignedBigInteger('receiver')->nullable();
+            $table->foreign('receiver')->references('id')->on('users');
             $table->timestamps();
         });
     }

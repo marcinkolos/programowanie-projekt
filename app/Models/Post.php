@@ -12,17 +12,15 @@ class Post extends Model
     protected $fillable = [
         'isPrivate',
         'title',
-        'message',
-        'sender',
-        'receiver'
+        'message'
     ];
 
-    public function sender()
+    public function sender_model()
     {
-        return $this->belongsTo(User::class, 'senderId');
+        return $this->belongsTo(User::class, 'sender');
     }
 
-    public function receiver()
+    public function receiver_model()
     {
         return $this->belongsTo(User::class, 'receiver');
     }
