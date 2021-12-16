@@ -7,11 +7,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|unique:users,username',
+            'name' => 'required',
+            'surname' => 'required',
+            'email' => 'required|unique:users,email',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $validationErrors = $validator->errors();
+            if ($validationErrors->has('email') || $validationErrors->has('username')) {
+                return response(
+                    'User already exists'
+                    , 409);
+            }
+
+            return $validator->errors();
+        }
+
         return User::create([
             'username' => $request->input('username'),
             'name' => $request->input('name'),
