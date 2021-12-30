@@ -10,14 +10,9 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id',
         'isPrivate',
         'title',
         'message'
-    ];
-
-    protected $hidden = [
-        
     ];
 
     public function sender_model()
