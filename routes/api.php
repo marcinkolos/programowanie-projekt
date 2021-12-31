@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use \App\Http\Controllers\AuthController;
+use \App\Http\Controllers\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,11 +17,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Auth routes
-Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
-Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('profile', [\App\Http\Controllers\AuthController::class, 'profile']);
-    Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+    Route::get('profile', [AuthController::class, 'profile']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('posts', [PostController::class, 'addPost']);
+    Route::get('post/{id}', [PostController::class, 'getPost']);
+    Route::get('posts', [PostController::class, 'getPosts']);
+    Route::delete('post/{id}', [PostController::class, 'deletePost']);
+    Route::patch('post/{id}', [PostController::class, 'patchPost']);
 });
-
