@@ -11,8 +11,6 @@ class UserController extends Controller
     {
         $users = User::all();
         return $users
-            ->makeHidden(['username', 'email', 'role', 'created_at', 'updated_at'])
-            ->makeVisible(['id']);
-
+            ->makeHidden(['username', 'email', 'role', 'created_at', 'updated_at']);
     }
 }
