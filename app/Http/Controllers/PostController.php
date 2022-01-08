@@ -43,29 +43,31 @@ class PostController extends Controller
 
     public function getPost($id){
         $post = Post::findOrFail($id);
-
-        if(!$post->isPrivate || $post->sender == Auth::id() || $post->receiver == Auth::id())
+        $sender = User::findOrFail($post->sender)->makeHidden(['id', 'username', 'email', 'created_at', 'updated_at']);
+        $receiver = User::find($post->receiver)->makeHidden(['id', 'username', 'email', 'created_at', 'updated_at']);
+        if(!$post->isPrivate || $post->sender == Auth::id() || $post->receiver == Auth::id()) {
+            $post->sender = $sender;
+            $post->receiver = $receiver ? $receiver : null;
             return $post;
+        } 
         else 
             return response('You don\'t have access to this post', 403);
     }
 
-    public function getPosts(){
+    public function getPosts(Request $request){
         $userId = Auth::id();
-        $publicPosts = Post::where('isPrivate', false);
+        $publicPosts = Post::where('isPrivate', false)->orderBy('created_at', 'desc')->get();
+        $sentPosts = Post::where('sender', $userId)->orderBy('created_at', 'desc')->get();
         $privatePosts = Post::where([
-            ['isPrivate', true], ['sender', $userId]
-        ])->orWhere([
             ['isPrivate', true], ['receiver', $userId]
-        ]);
+        ])->orderBy('created_at', 'desc')->get();
 
-        $allPosts = $publicPosts
-            ->union($privatePosts)
-            ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
-
-        return $allPosts;
+        if($request->query('sent')) {
+            return $sentPosts;
+        } else if ($request->query('privateonly')) {
+            return $privatePosts;
+        }
+        return $publicPosts;
     }
 
     public function deletePost($id){
