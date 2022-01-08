@@ -18,13 +18,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $NUM_USERS = 5;
-        
+
         for ($i = 0; $i < $NUM_USERS; $i++) {
             $public_posts = Post::factory()->count(2)->for($user = User::factory(), 'sender_model')->state(['receiver' => null, 'isPrivate' => false])->create();
         }
-        
+
         $private_posts = Post::factory()->count(10)->state((new Sequence(
-            fn ($sequence) => ['isPrivate' => true, 'sender' => User::all()->random(), 'receiver' => User::all()->random()],
+            function ($sequence) {
+                return ['isPrivate' => true, 'sender' => User::all()->random(), 'receiver' => User::all()->random()];
+            },
         )))->create();
     }
 }

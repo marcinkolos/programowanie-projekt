@@ -12,7 +12,7 @@ use App\Models\Post;
 class PostController extends Controller
 {
     public function addPost(Request $request)
-    {   
+    {
         $isPrivate = $request->input('isPrivate');
 
         $validator = Validator::make($request->all(), [
@@ -41,20 +41,21 @@ class PostController extends Controller
         return $post;
     }
 
-    public function getPost($id){
+    public function getPost($id)
+    {
         $post = Post::findOrFail($id);
         $sender = User::findOrFail($post->sender)->makeHidden(['id', 'username', 'email', 'created_at', 'updated_at']);
-        $receiver = User::find($post->receiver)->makeHidden(['id', 'username', 'email', 'created_at', 'updated_at']);
-        if(!$post->isPrivate || $post->sender == Auth::id() || $post->receiver == Auth::id()) {
+        $receiver = User::find($post->receiver);
+        if (!$post->isPrivate || $post->sender == Auth::id() || $post->receiver == Auth::id()) {
             $post->sender = $sender;
-            $post->receiver = $receiver ? $receiver : null;
+            $post->receiver = $receiver ? $receiver->makeHidden(['id', 'username', 'email', 'created_at', 'updated_at']) : null;
             return $post;
-        } 
-        else 
+        } else
             return response('You don\'t have access to this post', 403);
     }
 
-    public function getPosts(Request $request){
+    public function getPosts(Request $request)
+    {
         $userId = Auth::id();
         $publicPosts = Post::where('isPrivate', false)->orderBy('created_at', 'desc')->get();
         $sentPosts = Post::where('sender', $userId)->orderBy('created_at', 'desc')->get();
@@ -62,7 +63,7 @@ class PostController extends Controller
             ['isPrivate', true], ['receiver', $userId]
         ])->orderBy('created_at', 'desc')->get();
 
-        if($request->query('sent')) {
+        if ($request->query('sent')) {
             return $sentPosts;
         } else if ($request->query('privateonly')) {
             return $privatePosts;
@@ -70,28 +71,29 @@ class PostController extends Controller
         return $publicPosts;
     }
 
-    public function deletePost($id){
+    public function deletePost($id)
+    {
         $userId = Auth::id();
         $post = Post::findOrFail($id);
-        if($post->sender == $userId) 
+        if ($post->sender == $userId)
             return $post->delete();
-        else 
+        else
             return response('You don\'t have rights to delete this post', 403);
     }
 
-    public function patchPost(Request $request, $id){
+    public function patchPost(Request $request, $id)
+    {
         $userId = Auth::id();
         $post = Post::findOrFail($id);
         $title = $request->input('title');
         $message = $request->input('message');
-        if($post->sender == $userId){
+        if ($post->sender == $userId) {
             $post->update([
                 'title' => $title ? $title : $post->title,
                 'message' => $message ? $message : $post->message
             ]);
             return $post;
-        } 
-        else 
+        } else
             return response('You don\'t have rights to edit this post', 403);
     }
 }
