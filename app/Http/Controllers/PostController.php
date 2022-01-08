@@ -48,7 +48,7 @@ class PostController extends Controller
         $receiver = User::find($post->receiver);
         if (!$post->isPrivate || $post->sender == Auth::id() || $post->receiver == Auth::id()) {
             $post->sender = $sender;
-            $post->receiver = $receiver ? $receiver->makeHidden(['id', 'username', 'email', 'created_at', 'updated_at']) : null;
+            $post->receiver = $receiver ? $receiver->makeHidden(['username', 'email', 'created_at', 'updated_at']) : null;
             return $post;
         } else
             return response('You don\'t have access to this post', 403);
